@@ -1,0 +1,112 @@
+"""
+Model parameters configuration for the adaptive market making strategy.
+"""
+
+# Autoencoder model parameters
+autoencoder:
+  input_channels: 25  # Number of features in input data
+  seq_length: 100     # Sequence length for temporal patterns
+  latent_dim: 16      # Dimension of latent space representation
+  learning_rate: 0.001
+  batch_size: 64
+  num_epochs: 60
+  lambda1: 0.1        # Clustering regularization weight
+  lambda2: 0.05       # Temporal consistency weight
+  dropout_rate: 0.2
+  early_stopping:
+    patience: 10
+    min_delta: 0.001
+  optimizer:
+    type: "adam"
+    weight_decay: 1e-5
+  scheduler:
+    type: "reduce_on_plateau"
+    factor: 0.5
+    patience: 5
+  architecture:
+    conv_layers: [32, 64, 128]
+    kernel_sizes: [5, 5, 5]
+    pool_sizes: [2, 2, 2]
+
+# Gaussian Mixture Model parameters
+gmm:
+  n_components_range: [2, 11]  # Range to search for optimal number of components
+  covariance_type: "full"      # Options: full, tied, diag, spherical
+  max_iter: 100
+  n_init: 10
+  random_state: 42
+  warm_start: true
+  reg_covar: 1e-6
+  init_params: "kmeans"
+
+# Bayesian Informed Trading Estimator parameters
+bayesian_estimator:
+  prior_alpha: 0.2            # Prior probability of informed trading
+  prior_confidence: 50        # Strength of prior belief
+  mcmc_samples: 2000          # Number of MCMC samples
+  tuning_samples: 1000        # Number of tuning samples
+  chains: 4                   # Number of MCMC chains
+  target_accept: 0.8          # Target acceptance rate
+  return_scale_prior: 0.001   # Prior scale for return distribution
+  update_window: 50           # Window size for model updates
+
+# Regime-specific model parameters
+regime_parameters:
+  # Normal regime
+  normal:
+    volatility_scale: 1.0
+    mean_reversion_strength: 0.05
+    order_flow_autocorrelation: 0.1
+    spread_multiplier: 1.0
+    inventory_aversion: 1.0
+    risk_aversion: 1.0
+    
+  # Volatile regime
+  volatile:
+    volatility_scale: 2.5
+    mean_reversion_strength: 0.02
+    order_flow_autocorrelation: 0.05
+    spread_multiplier: 1.8
+    inventory_aversion: 2.0
+    risk_aversion: 2.5
+    
+  # Trending regime
+  trending:
+    volatility_scale: 1.5
+    mean_reversion_strength: -0.02  # Negative means momentum
+    order_flow_autocorrelation: 0.3
+    spread_multiplier: 1.2
+    inventory_aversion: 1.5
+    risk_aversion: 1.2
+    
+  # Informed trading regime
+  informed:
+    volatility_scale: 1.8
+    mean_reversion_strength: 0.01
+    order_flow_autocorrelation: 0.4
+    spread_multiplier: 2.0
+    inventory_aversion: 3.0
+    risk_aversion: 3.0
+
+# Model training and validation
+training:
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  shuffle: true
+  random_seed: 42
+  cross_validation:
+    n_splits: 5
+    shuffle: true
+
+# Model deployment
+deployment:
+  quantization: "float16"  # Options: float32, float16, int8
+  optimization_level: 3    # ONNX optimization level
+  batch_inference: true
+  max_batch_size: 16
+  inference_timeout_ms: 10
+  fallback_strategy: "previous_prediction"  # What to do if inference fails
+  model_version_policy:
+    rule: "latest_version"  # Options: all_versions, latest_version, specific_versions
+    versions: [1]           # Used only if rule is specific_versions

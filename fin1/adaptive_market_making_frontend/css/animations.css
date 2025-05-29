@@ -1,0 +1,331 @@
+/* Additional animations and effects for the Adaptive Market Making Frontend */
+
+/* Creator section animations */
+.creator-photo-container {
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.creator-photo {
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s ease;
+  transform-style: preserve-3d;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.creator-photo:hover {
+  box-shadow: 0 15px 40px rgba(0, 196, 204, 0.4);
+}
+
+.creator-photo.pulse {
+  animation: pulse 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(0, 196, 204, 0.6);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.creator-name {
+  position: relative;
+  display: inline-block;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.creator-name::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: 2px;
+}
+
+.creator-social a {
+  position: relative;
+  overflow: hidden;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.creator-social a:hover {
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  transform: translateY(-5px);
+}
+
+.creator-social a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+
+.creator-social a:hover::before {
+  opacity: 1;
+}
+
+/* Enhanced feature cards */
+.feature-card {
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s ease;
+  overflow: hidden;
+}
+
+.feature-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.feature-card:hover::after {
+  opacity: 1;
+}
+
+.feature-icon {
+  position: relative;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.feature-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border-radius: 50%;
+  z-index: -1;
+  opacity: 0.1;
+  transition: all 0.5s ease;
+}
+
+.feature-card:hover .feature-icon::after {
+  width: 70px;
+  height: 70px;
+  opacity: 0.2;
+}
+
+/* Enhanced hero section */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('images/assets/grid-pattern.svg');
+  opacity: 0.05;
+  animation: moveBackground 20s linear infinite;
+}
+
+@keyframes moveBackground {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100px 100px;
+  }
+}
+
+/* Visible animation classes */
+.fade-in.visible {
+  animation: fadeIn 1s ease forwards;
+}
+
+.fade-in-delay-1.visible {
+  animation: fadeIn 1s ease 0.2s forwards;
+}
+
+.fade-in-delay-2.visible {
+  animation: fadeIn 1s ease 0.4s forwards;
+}
+
+.fade-in-delay-3.visible {
+  animation: fadeIn 1s ease 0.6s forwards;
+}
+
+.feature-card.visible {
+  animation: featureCardIn 0.6s ease forwards;
+}
+
+@keyframes featureCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile menu animation */
+.nav-links.active {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: var(--light-bg);
+  padding: 1rem 0;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Chart animations */
+.chart-container {
+  position: relative;
+  height: 300px;
+  margin-bottom: 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
+}
+
+.chart-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Market visualization container */
+.market-visualization {
+  width: 100%;
+  height: 400px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 3rem;
+  box-shadow: var(--card-shadow);
+}
+
+/* Research papers animation */
+.research-papers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.research-paper {
+  background-color: var(--card-bg);
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: var(--card-shadow);
+  transition: var(--transition-medium);
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.research-paper.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.research-paper:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Apple-inspired button hover effect */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-primary:hover::after {
+  opacity: 1;
+}
+
+/* Google-inspired card hover effect */
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 0;
+  background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+  transition: height 0.5s ease;
+}
+
+.feature-card:hover::before {
+  height: 100%;
+}
+
+/* Aramco-inspired section transitions */
+.section-header h2 {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-header h2::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  transition: width 0.8s ease;
+}
+
+.section-header.visible h2::before {
+  width: 80px;
+}

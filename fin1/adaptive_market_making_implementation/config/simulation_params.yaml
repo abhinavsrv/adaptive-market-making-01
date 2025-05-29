@@ -1,0 +1,164 @@
+"""
+Simulation parameters configuration for the adaptive market making strategy.
+"""
+
+# General simulation parameters
+general:
+  simulation_mode: "agent_based"  # Options: agent_based, historical_replay
+  start_date: "2023-01-01"
+  end_date: "2023-12-31"
+  trading_days: [0, 1, 2, 3, 4]  # Monday to Friday (0-6)
+  trading_hours:
+    start: "08:30:00"  # Market open (Chicago time)
+    end: "15:15:00"    # Market close (Chicago time)
+  time_step_seconds: 0.1  # Simulation time step in seconds
+  random_seed: 42
+  initial_capital: 10000000  # Initial capital in USD
+  transaction_cost_bps: 0.5  # Transaction cost in basis points
+  slippage_model: "proportional"  # Options: none, fixed, proportional, market_impact
+  
+# Market simulation parameters
+market:
+  symbol: "ES"
+  tick_size: 0.25
+  contract_multiplier: 50
+  initial_price: 4500.0
+  initial_volatility: 0.15  # Annualized volatility
+  volatility_of_volatility: 0.3
+  mean_reversion_strength: 0.05
+  price_drift: 0.0
+  seasonal_patterns:
+    time_of_day_effect: true
+    day_of_week_effect: true
+  jumps:
+    enabled: true
+    intensity: 0.01  # Average number of jumps per day
+    mean_jump_size: 0.0
+    jump_size_std: 0.01
+  liquidity_profile:
+    base_depth: 100  # Base depth at touch
+    depth_decay: 1.5  # Exponential decay of depth
+    book_depth_levels: 10  # Number of price levels
+    order_size_distribution: "lognormal"  # Options: fixed, uniform, lognormal
+    order_size_mean: 5
+    order_size_std: 3
+    
+# Agent-based simulation parameters
+agents:
+  # Market maker agents
+  market_makers:
+    count: 5
+    strategies:
+      - type: "basic"
+        weight: 0.2
+        spread_bps: 1.0
+        inventory_limit: 50
+      - type: "adaptive"
+        weight: 0.6
+        risk_aversion: [0.8, 1.2]
+        inventory_aversion: [0.8, 1.2]
+      - type: "informed"
+        weight: 0.2
+        alpha: 0.3
+        information_horizon: 100
+        
+  # Liquidity taker agents
+  liquidity_takers:
+    count: 100
+    strategies:
+      - type: "noise"
+        weight: 0.6
+        arrival_rate: 0.1  # Orders per second
+        size_mean: 5
+        size_std: 3
+      - type: "momentum"
+        weight: 0.2
+        lookback_window: 50
+        threshold: 0.5
+      - type: "informed"
+        weight: 0.1
+        arrival_rate: 0.02
+        information_advantage: 0.01
+        information_horizon: 100
+      - type: "institutional"
+        weight: 0.1
+        arrival_rate: 0.005
+        size_mean: 50
+        size_std: 20
+        execution_style: "twap"  # Options: immediate, twap, vwap, adaptive
+        
+# Regime simulation parameters
+regimes:
+  simulation_type: "markov_switching"  # Options: fixed, scheduled, markov_switching
+  
+  # Markov switching parameters
+  transition_matrix: [
+    [0.98, 0.01, 0.005, 0.005],  # From normal
+    [0.05, 0.93, 0.01, 0.01],    # From volatile
+    [0.03, 0.02, 0.94, 0.01],    # From trending
+    [0.04, 0.03, 0.02, 0.91]     # From informed
+  ]
+  
+  initial_regime: "normal"
+  
+  # Regime-specific parameters
+  regimes:
+    normal:
+      volatility_scale: 1.0
+      mean_reversion: 0.05
+      informed_ratio: 0.1
+      liquidity_scale: 1.0
+      
+    volatile:
+      volatility_scale: 2.5
+      mean_reversion: 0.02
+      informed_ratio: 0.15
+      liquidity_scale: 0.6
+      
+    trending:
+      volatility_scale: 1.5
+      mean_reversion: -0.02  # Negative means momentum
+      informed_ratio: 0.2
+      liquidity_scale: 0.8
+      
+    informed:
+      volatility_scale: 1.8
+      mean_reversion: 0.01
+      informed_ratio: 0.4
+      liquidity_scale: 0.5
+      
+# Performance evaluation parameters
+evaluation:
+  metrics:
+    - "pnl"
+    - "sharpe_ratio"
+    - "max_drawdown"
+    - "win_rate"
+    - "inventory_distribution"
+    - "spread_capture"
+    - "adverse_selection"
+    - "market_participation"
+  
+  benchmarks:
+    - type: "static_spread"
+      spread_bps: 1.0
+    - type: "static_spread"
+      spread_bps: 2.0
+    - type: "avellaneda_stoikov"
+      risk_aversion: 1.0
+      
+  regime_specific_analysis: true
+  transaction_cost_analysis: true
+  
+# Visualization parameters
+visualization:
+  real_time: false
+  save_figures: true
+  plot_types:
+    - "price_series"
+    - "inventory"
+    - "pnl"
+    - "spread"
+    - "regime_classification"
+    - "order_book_heatmap"
+  update_interval_ms: 1000  # Visualization update interval in milliseconds

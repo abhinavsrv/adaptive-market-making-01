@@ -1,0 +1,112 @@
+# Data Sources Configuration
+
+# CME Globex connection settings
+cme_globex:
+  connection:
+    protocol: "FIX.4.4"
+    host: "cme.example.com"  # Replace with actual CME host in production
+    port: 9823
+    sender_comp_id: "ADAPTIVE_MM_STRAT"
+    target_comp_id: "CME"
+    heartbeat_interval: 30
+    reconnect_interval: 5
+    logon_timeout: 10
+  
+  security_definitions:
+    - symbol: "ES"
+      security_id: "ES"
+      security_id_source: "8"
+      security_type: "FUT"
+      product: "E-mini S&P 500"
+      contract_multiplier: 50
+      tick_size: 0.25
+      price_precision: 2
+      active_months: ["H", "M", "U", "Z"]  # Mar, Jun, Sep, Dec
+    
+    - symbol: "NQ"
+      security_id: "NQ"
+      security_id_source: "8"
+      security_type: "FUT"
+      product: "E-mini NASDAQ-100"
+      contract_multiplier: 20
+      tick_size: 0.25
+      price_precision: 2
+      active_months: ["H", "M", "U", "Z"]
+
+# Kafka configuration
+kafka:
+  bootstrap_servers: ["kafka1:9092", "kafka2:9092", "kafka3:9092"]
+  client_id: "adaptive_mm_client"
+  topics:
+    raw_trades: "raw.cme.es.trades"
+    raw_orderbook: "raw.cme.es.orderbook"
+    raw_statistics: "raw.cme.es.statistics"
+    processed_features: "processed.cme.es.features"
+    regime_classifications: "market.regimes.es"
+    strategy_parameters: "strategy.parameters.es"
+  consumer_group: "adaptive_mm_group"
+  auto_offset_reset: "latest"
+  enable_auto_commit: true
+  auto_commit_interval_ms: 5000
+  max_poll_records: 500
+  session_timeout_ms: 30000
+
+# InfluxDB configuration
+influxdb:
+  url: "http://influxdb:8086"
+  org: "quant_research"
+  bucket: "market_data"
+  token: "${INFLUXDB_TOKEN}"  # Set via environment variable
+  batch_size: 5000
+  flush_interval: 1000  # milliseconds
+  retention_policies:
+    raw_data: "7d"  # Keep raw data for 7 days
+    features: "30d"  # Keep features for 30 days
+    regimes: "90d"  # Keep regime classifications for 90 days
+    performance: "365d"  # Keep performance metrics for 1 year
+
+# Apache Flink configuration
+flink:
+  job_manager:
+    address: "jobmanager"
+    port: 8081
+    memory: "2048m"
+  task_manager:
+    memory: "4096m"
+    num_task_slots: 4
+  parallelism:
+    default: 2
+    max: 8
+  checkpointing:
+    interval: 60000  # milliseconds
+    timeout: 60000  # milliseconds
+    min_pause_between_checkpoints: 30000  # milliseconds
+    max_concurrent_checkpoints: 1
+
+# Historical data sources for backtesting and training
+historical_data:
+  cme_historical:
+    path: "/data/historical/cme"
+    format: "parquet"
+    date_range:
+      start: "2020-01-01"
+      end: "2023-12-31"
+  
+  refinitiv:
+    api_key: "${REFINITIV_API_KEY}"  # Set via environment variable
+    endpoint: "https://api.refinitiv.com/data/historical"
+    symbols: ["ESH0", "ESM0", "ESU0", "ESZ0"]
+    fields: ["TRADE_PRICE", "TRADE_SIZE", "BID", "ASK", "BID_SIZE", "ASK_SIZE"]
+    frequency: "tick"
+
+# Data quality monitoring
+data_quality:
+  latency_threshold_ms: 100
+  gap_detection_enabled: true
+  max_allowed_gap_ms: 500
+  anomaly_detection:
+    enabled: true
+    z_score_threshold: 3.0
+  logging:
+    level: "INFO"
+    file: "/var/log/adaptive_mm/data_quality.log"

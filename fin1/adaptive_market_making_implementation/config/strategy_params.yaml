@@ -1,0 +1,141 @@
+"""
+Strategy parameters configuration for the adaptive market making strategy.
+"""
+
+# General strategy parameters
+general:
+  trading_hours:
+    start: "08:30:00"  # Market open (Chicago time)
+    end: "15:15:00"    # Market close (Chicago time)
+  trading_days: [0, 1, 2, 3, 4]  # Monday to Friday (0-6)
+  max_position: 100              # Maximum allowed position
+  target_inventory: 0            # Target inventory level
+  risk_aversion: 1.5             # Base risk aversion parameter
+  inventory_aversion: 1.0        # Base inventory aversion parameter
+  min_spread_ticks: 1            # Minimum spread in ticks
+  max_spread_ticks: 20           # Maximum spread in ticks
+  order_size_base: 5             # Base order size
+  order_size_multiplier: 1.0     # Multiplier for order size
+  cancel_replace_threshold: 2    # Threshold for cancel/replace in ticks
+  quote_refresh_interval_ms: 100 # Quote refresh interval in milliseconds
+  
+# Spread calculation parameters
+spread_calculator:
+  base_half_spread_bps: 0.5      # Base half spread in basis points
+  volatility_multiplier: 2.0     # Multiplier for volatility component
+  inventory_multiplier: 0.1      # Multiplier for inventory component
+  adverse_selection_multiplier: 1.5  # Multiplier for adverse selection component
+  market_impact_multiplier: 0.8  # Multiplier for market impact component
+  competition_adjustment: 0.2    # Adjustment for competitive pressure
+  min_profitability_threshold: 0.2   # Minimum profitability threshold
+  
+# Inventory management parameters
+inventory_management:
+  target_inventory: 0            # Target inventory level
+  max_inventory: 100             # Maximum allowed inventory
+  inventory_half_life: 300       # Target half-life for inventory decay (seconds)
+  skew_factor: 0.1               # Base skew factor for inventory management
+  aggressive_threshold: 0.8      # Threshold for aggressive inventory reduction
+  passive_threshold: 0.3         # Threshold for passive inventory accumulation
+  mean_reversion_factor: 0.05    # Mean reversion factor for inventory targeting
+  
+# Regime-specific strategy parameters
+regime_strategies:
+  # Normal regime
+  normal:
+    spread_multiplier: 1.0
+    inventory_aversion: 1.0
+    risk_aversion: 1.0
+    order_size_multiplier: 1.0
+    skew_factor: 0.1
+    cancel_replace_threshold: 2
+    
+  # Volatile regime
+  volatile:
+    spread_multiplier: 1.8
+    inventory_aversion: 2.0
+    risk_aversion: 2.5
+    order_size_multiplier: 0.7
+    skew_factor: 0.2
+    cancel_replace_threshold: 1
+    
+  # Trending regime
+  trending:
+    spread_multiplier: 1.2
+    inventory_aversion: 1.5
+    risk_aversion: 1.2
+    order_size_multiplier: 1.2
+    skew_factor: 0.15
+    cancel_replace_threshold: 3
+    
+  # Informed trading regime
+  informed:
+    spread_multiplier: 2.0
+    inventory_aversion: 3.0
+    risk_aversion: 3.0
+    order_size_multiplier: 0.5
+    skew_factor: 0.3
+    cancel_replace_threshold: 1
+
+# Hedging parameters
+hedging:
+  enabled: true
+  hedging_interval_seconds: 30
+  min_hedge_size: 10
+  hedge_execution_style: "twap"  # Options: twap, vwap, immediate
+  twap_duration_seconds: 300
+  hedge_instruments:
+    - symbol: "ES"
+      ratio: 1.0
+      priority: 1
+    - symbol: "SPY"
+      ratio: 0.1
+      priority: 2
+  options_delta_hedging:
+    enabled: true
+    delta_threshold: 0.1
+    gamma_threshold: 0.05
+    
+# Execution parameters
+execution:
+  order_types:
+    - "limit"
+    - "ioc"
+    - "fok"
+  time_in_force: "day"
+  post_only: true
+  max_retry_attempts: 3
+  retry_delay_ms: 100
+  execution_timeout_ms: 500
+  aggressive_crossing:
+    enabled: true
+    max_spread_bps: 1.0
+    max_size: 10
+    
+# Risk management parameters
+risk_management:
+  max_drawdown_pct: 2.0          # Maximum allowed drawdown percentage
+  daily_loss_limit_pct: 1.0      # Daily loss limit as percentage of capital
+  position_limits:
+    absolute: 100                # Absolute position limit
+    notional: 5000000            # Notional position limit
+    relative_to_adv: 0.01        # Position limit relative to ADV
+  concentration_limits:
+    max_pct_of_volume: 0.1       # Maximum percentage of market volume
+    max_pct_of_depth: 0.2        # Maximum percentage of order book depth
+  circuit_breakers:
+    enabled: true
+    loss_per_minute_threshold: 1000  # Loss per minute threshold
+    consecutive_loss_trades: 5   # Number of consecutive losing trades
+    market_volatility_multiplier: 3.0  # Market volatility multiplier
+  stress_testing:
+    scenarios:
+      - name: "flash_crash"
+        price_move_pct: -7.0
+        volume_multiplier: 5.0
+      - name: "liquidity_dry_up"
+        price_move_pct: -3.0
+        spread_multiplier: 10.0
+      - name: "volatility_spike"
+        price_move_pct: 0.0
+        volatility_multiplier: 5.0
